@@ -247,7 +247,7 @@
       ctx.clip();
       ctx.restore();
 
-      drawPoint(-tw+24,-th+20,tw-24,-20);
+      drawPoint(-tw+32,-th+22,tw-32,-28);
 
       prizeContent(-tw+38,-th+34,tw-38,-34);
     }
@@ -260,7 +260,9 @@
             pd = 8;
       let _w = ew - sw,
           rw = (_w - pd * (num + 1)) /num,
-          rh = eh - sh;
+          rh = eh - sh,
+          x = 0,
+          y = 0;
       var prizeBg = ctx.createLinearGradient(sw,sh,sw,eh);
       prizeBg.addColorStop(0,'#bcbcbc');
       prizeBg.addColorStop(.3,'#f4f4f6');
@@ -269,43 +271,60 @@
       prizeBg.addColorStop(1,'#bcbcbc');
       ctx.fillStyle = prizeBg;
       for(let i = 1; i<=num;i++){  
+        x = sw + i*pd + (i-1)*rw;
+        y = sh + (rh-rw)/2;
         ctx.beginPath();
         ctx.fillRect(sw + i*pd + (i-1)*rw,sh,rw,rh);
         ctx.closePath();
+        var img = new Image();
+        img.src = Game.prizeList[Game.defaultValue[i-1]];
+        // img.onload = function(){
+        //   console.log("加载完成===>画图")
+        //   ctx.drawImage(img,x,y,rw,rw);
+        // }
+        ctx.drawImage(img,x,y,rw,rw);   
       }
       ctx.restore();
     }
 
+    // 灯带圆点
     function drawPoint(sx,sy,ex,ey){
       ctx.save();
       let num = 20,
-          r = 4;
+          r = 4,
+          pd = 8;
       var l = ((ey - sy) + (ex - sx))*2;
-      // console.log(l)
-      // console.log((ex - sx))
-      // console.log((ex - sx)+(ey-sy))
       // 计算间距
       var mg = l/num,
-          pd = 2,
-          x = 0,
-          y = 0,
-          dx = 0,
-          dy = 0;
+          x = 0,  //圆点x坐标
+          y = 0,  //圆点y坐标
+          dx = 0, //当前原地长度
+          dy = 0, //
+          dl = 0; //当前
       for(let i = 0;i<num;i++){
-        dx = 2*r + i*mg + pd;
-        if(dx<ex - sx){
+        dx = i*mg + pd + 2*r;
+        if(dx<(ex - sx)){
           x = sx + dx;
-          y = sy + pd;
-        }else if(dx>ex - sx && dx < l/2){
-          dy += mg
-          x = ex - 2*r + pd/2;
+          y = sy;
+          let _l = (ex-sx) - dx;
+          if(_l < mg){
+            dl = _l;
+          }
+        }else if(dx>(ex - sx) && dx < l/2){
+          if(dl>0){
+            dy += mg - dl;
+            dl = 0;
+          }else{
+            dy += mg;
+          }
+          x = ex + 2;
           y = sy + dy;
-        }else if(dx > l/2 && dx < l - (ey-sy)){
-          x = sx;
-          y = ey - pd;
+        }else if(dx > l/2 && dx < l - (ey- sy)){
+          x = (l - dx - (ey-sy)) - (ex-sx)/2;
+          y = ey+2;
         }else{
-          x = sx + 2*r - pd/2;
-          y = sy + pd + mg;
+          x = sx - 2;
+          y = sy + (l - dx);
         }
         ctx.beginPath();
         ctx.arc(x,y,r,0,Math.PI*2);

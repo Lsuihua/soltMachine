@@ -6,6 +6,17 @@
     this.canvas = document.querySelector(params.id);
     this.ctx = this.canvas.getContext('2d');
 
+    this.prizeList = [
+      './imgs/p1.png',
+      './imgs/p2.png',
+      './imgs/p3.png',
+      './imgs/p4.png',
+      './imgs/p5.png',
+      './imgs/p6.png',
+    ];
+    
+    this.defaultValue = [0,1,2];
+
     this.init();
     this.loadResource(()=>{
       this.render();
